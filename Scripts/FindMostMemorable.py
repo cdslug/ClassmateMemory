@@ -27,7 +27,7 @@ def sumPairDistance(pathInput, yearbookNamesFile):
 		print 'WARNING WARNING: Class Size is ' + str(classSize) + ' which is not 184!!!! *****'
 		print '\n\n\n'
 
-	memValueSum = [[0,0]] * classSize #initialize values to zero
+	memValueSum = [{'score':0.0,'hits':0.0} for j in range(classSize)] #initialize values to zero
 
 	indexListing = os.listdir(pathInput)
 	participantCount = 0.0
@@ -49,11 +49,13 @@ def sumPairDistance(pathInput, yearbookNamesFile):
 				continue
 			pos1 = int(pos1) + 1
 
-			temp1 = memValueSum[dim1][0] + 1/float(pos1)
-			temp2 = memValueSum[dim1][1] + 1
-			memValueSum[dim1] = [temp1, temp2]
-	for mvs in memValueSum:
-		mvs[0] = mvs[0] / float(participantCount)
+			memValueSum[dim1]['score'] += 1/float(pos1)
+			memValueSum[dim1]['hits'] += 1
+	for index in range(len(memValueSum)):
+		try:
+			memValueSum[index]['score'] /= float(memValueSum[index]['hits'])
+		except ZeroDivisionError:
+			pass #if it's division by 0, then the score will be zero, but this is an assumption
 	return {'memValueSum':memValueSum}
 
 def writeToFile(memValueSum, yearbookNamesFile, fileOutput):
@@ -62,17 +64,17 @@ def writeToFile(memValueSum, yearbookNamesFile, fileOutput):
 	yearbookNames = UtilFunc.parseDataFromFile(yearbookNamesFile)
 
 	with open(fileOutput,'w') as fOut:
-		fOut.write('AlphaIndex,MemerableScore,NumberOfLists,YearbookLast,YearbookFirst,Graduated09\n')
+		fOut.write('AlphaIndex,MemerableScore,NumberOfLists,YearbookLast,YearbookFirst,GraduatedLLA09\n')
 		for index1, entry1 in enumerate(yearbookNames):
 			dim1 = int(entry1['AlphaIndex'])
 
 			#TODO rename
-			fOut.write('{},{},{},{},{},{}'.format(	dim1,
-				   									memValueSum[dim1][0],
-				   									memValueSum[dim1][1],
+			fOut.write('{},{},{},{},{},{}\n'.format(	dim1,
+				   									memValueSum[dim1]['score'],
+				   									memValueSum[dim1]['hits'],
 				   									entry1['YearbookLast'],
 				   									entry1['YearbookFirst'],
-				   									entry1['Graduated09']))
+				   									entry1['GraduatedLLA09']))
 
 	#TODO
 
@@ -82,7 +84,7 @@ def writeToFile(memValueSum, yearbookNamesFile, fileOutput):
 usageDescription = ['pathInput: A full path to a .csv file containing indexed remembered names',
 					'yearbookNamesFile: A full path to a .csv file containing all expected classmates names along with their alphabetical index, among other details. See full documentation for extensive details',
 					'fileOutput: A full path to a .csv file']
-checkInputArgs(3,usageDescription)
+UtilFunc.checkInputArgs(3,usageDescription)
 
 pathInput = sys.argv[1]
 yearbookNamesFile = sys.argv[2]

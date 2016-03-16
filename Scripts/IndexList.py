@@ -7,11 +7,11 @@ import UtilFunc
 
 
 
-def indexList(inputFilePath, inputCompleteFilePath, yearbookReferenceFilePath, outputFilePath, errorFilePath = None):
+def indexList(inputFilePath, inputCompleteFilePath, errorFilePath, yearbookReferenceFilePath, outputFilePath):
 
 	names = []
 	#list of dictionaries
-	yearbookNames = UtilFunc.parseDataFromFile(yearbookNamesFile)
+	yearbookNames = UtilFunc.parseDataFromFile(yearbookReferenceFilePath)
 
 	#list of dicitonaries
 	namesOutput = []
@@ -28,7 +28,7 @@ def indexList(inputFilePath, inputCompleteFilePath, yearbookReferenceFilePath, o
 				l1 = lineSplit[1]
 			else:
 				l1 = '_'
-			names.append({	'WrittenIndex(int)':str(writtenIndex),
+			names.append({	'WrittenIndex':str(writtenIndex),
 							'WrittenFirst':l0,
 							'WrittenLast':l1})
 
@@ -53,19 +53,19 @@ def indexList(inputFilePath, inputCompleteFilePath, yearbookReferenceFilePath, o
 
 	#append missing names
 	for ybn in yearbookNames:
-		if ybn['AlphaIndex(int)'] not in [no['AlphaIndex(int)'] for no in namesOutput]:
+		if ybn['AlphaIndex'] not in [no['AlphaIndex'] for no in namesOutput]:
 			temp = ybn.copy()
-			temp.update({	'WrittenIndex(int)':'-',
+			temp.update({	'WrittenIndex':'-',
 							'WrittenLast':'',
 							'WrittenFirst':'', 
 							'Spelling':str(0)})
 			namesOutput.append(temp)
 
 	with open(outputFilePath,'w') as fOut:
-		fOut.write('AlphaIndex(int),WrittenIndex(int),WrittenLast,WrittenFirst,YearbookLast,YearbookFirst,Spelling(dec),GraduatedLLA09\n')
+		fOut.write('AlphaIndex,WrittenIndex,WrittenLast,WrittenFirst,YearbookLast,YearbookFirst,Spelling,GraduatedLLA09\n')
 		for no in namesOutput:
 			fOut.write('{},{},{},{},{},{},{},{}\n'.format(	no['AlphaIndex'],
-				   											no['WrittenIndex(int)'],
+				   											no['WrittenIndex'],
 				   											no['WrittenLast'],
 				   											no['WrittenFirst'],
 				   											no['YearbookLast'],

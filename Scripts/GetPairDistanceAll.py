@@ -37,7 +37,8 @@ def sumPairDistance(pathInput, yearbookNamesFile):
 		print 'WARNING WARNING: Class Size is ' + str(classSize) + ' which is not 184!!!! *****'
 		print '\n\n\n'
 
-	pairValueSum = [[0]*classSize]*classSize #initialize classSize x classSize list
+	# pairValueSum = [[0]*classSize]*classSize #initialize classSize x classSize list #bug in this
+	pairValueSum = [[0 for i in range(classSize)] for j in range(classSize)]
 
 	indexListing = os.listdir(pathInput)
 	participantCount = 0.0
@@ -50,20 +51,31 @@ def sumPairDistance(pathInput, yearbookNamesFile):
 		print '#{}\t{}'.format(participantCount,fileInput)
 		fileData = UtilFunc.parseDataFromFile(os.path.join(pathInput,fileInput))
 		for p in fileData:
-			pairValueSum[p['AlphaIndex_1(int)']][p['AlphaIndex_2(int)']] += float(p['PairScore(dec)'])
+			pairValueSum[p['AlphaIndex_1']][p['AlphaIndex_2']] += float(p['PairScore'])
 		# with open(os.path.join(pathInput, fileInput), 'r') as fIn:
 		# 	for index, line in enumerate(fIn):
 		# 		#Skip the heading
 		# 		if index > 0:
 		# 			(alphaIndex_1,alphaIndex_2,pairScore,last_1,first_1,last_2,first_2) = line.replace('\r','').replace('\n','').split(',')
 		# 			pairValueSum[int(alphaIndex_1)][int(alphaIndex_2)] += float(pairScore)
-
+		
+	# print pairValueSum
+	# print 'WHAT: {}'.format(float(participantCount))
+	# print 'CHECKIT: {}'.format(pairValueSum[0][0]/float(participantCount))
+	tempDict = {}
 	for index1 in range(classSize):
+		# if index1 == 0:
+		# 	print 'only once'
 		for index2 in range(classSize):
+			# if (index1,index2) not in tempDict:
+			# 	tempDict[(index1,index2)] = 0
+			# else:
+				# print 'REPeAT!!!'
 			#normalize the pair value number by dividing it by the number of participants
 			#TODO: add division by zero error handling
 			pairValueSum[index1][index2] /= float(participantCount)
-
+			# print pairValueSum[index1][index2]
+	print pairValueSum[0][0]
 	return {'pairValueSum':pairValueSum}
 
 def writeToFile(pairValueSum, yearbookNamesFile, fileOutput):
@@ -72,12 +84,12 @@ def writeToFile(pairValueSum, yearbookNamesFile, fileOutput):
 	yearbookNames = UtilFunc.parseDataFromFile(yearbookNamesFile)
 
 	with open(fileOutput,'w') as fOut:
-		fOut.write('AlphaIndex_1(int),AlphaIndex_2(int),PairScore(dec),Last_1,First_1,Last_2,First_2\n')
+		fOut.write('AlphaIndex_1,AlphaIndex_2,PairScore,Last_1,First_1,Last_2,First_2\n')
 		for index1, entry1 in enumerate(yearbookNames):
 			for index2, entry2 in enumerate(yearbookNames):
 				if index1 != index2:
-					dim1 = int(entry1['AlphaIndex(int)'])
-					dim2 = int(entry2['AlphaIndex(int)'])
+					dim1 = int(entry1['AlphaIndex'])
+					dim2 = int(entry2['AlphaIndex'])
 
 					#TODO rename
 					fOut.write('{},{},{},{},{},{},{}\n'.format(	dim1,
@@ -96,7 +108,7 @@ def writeToFile(pairValueSum, yearbookNamesFile, fileOutput):
 usageDescription = ['pathInput: A full path to a directory containing .csv file result of individual pair distances',
 					'yearbookNamesFile: A full path to a .csv file containing all expected classmates names along with their alphabetical index, among other details. See full documentation for extensive details',
 					'fileOutput: A full path to a .csv file']
-checkInputArgs(3, usageDescription)
+UtilFunc.checkInputArgs(3, usageDescription)
 
 pathInput = sys.argv[1]
 yearbookNamesFile = sys.argv[2]

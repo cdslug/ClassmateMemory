@@ -19,12 +19,12 @@ def getDataSingle(dataClass):
 	### 	Each person gets analysis data
 
 	print '<test>{}</test>\n'.format(dataClass['Participation'])
-	classSize = int(dataClass['Participation'][0]['ClassSize(int)'])
+	classSize = int(dataClass['Participation'][0]['ClassSize'])
 	###only selects data for graduates. 
 	###Total students is greater than the graduate class size.
 	#dataParticipation = 
-	dataPairAll = [[i for i in dataClass['PairAll'] if i['AlphaIndex_1(int)'] == j] for j in range(classSize)]
-	dataMem = [[i for i in dataClass['Memorable'] if i['AlphaIndex(int)'] == j] for j in range(classSize)]	
+	dataPairAll = [[i for i in dataClass['PairAll'] if i['AlphaIndex_1'] == j] for j in range(classSize)]
+	dataMem = [[i for i in dataClass['Memorable'] if i['AlphaIndex'] == j] for j in range(classSize)]	
 	print dataMem[0]
 	# dataGroup
 	# dataSingleMemorySimilarity
@@ -44,14 +44,14 @@ usageDescription = ['fileInput1 - Participation: A full path to a .csv file cont
 					'fileInput4 - Group Formation: A full path to a .csv file containing students organized into association groups',
 					'fileInput5 - Single Memory Similarity: needs clarificaiton',
 					'pathOutput: A full path to a directory where all graduates\'s reports will be saved']
-checkInputArgs(6,usageDescription)
+UtilFunc.checkInputArgs(6,usageDescription)
 
 fileInputs = {}
 fileInputs['Participation'] = sys.argv[1]
 fileInputs['PairAll'] = sys.argv[2]
 fileInputs['Memorable'] = sys.argv[3]
 fileInputs['GroupFormation'] = sys.argv[4]
-fileInputs['SingleMemorySimilarity'] = sys.argv[5]
+# fileInputs['SingleMemorySimilarity'] = sys.argv[5]
 pathOutput = sys.argv[6]
 
 #TODO need to parse data from file

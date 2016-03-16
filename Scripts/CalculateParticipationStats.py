@@ -22,15 +22,15 @@ def countListedNames(pathInput):
 		counterTotal = 0
 		counterGrad09 = 0
 		for line in fileData:
-			if line['WrittenIndex(int)'] != '-':
+			if line['WrittenIndex'] != '-':
 				counterTotal += 1
 				if line['GraduatedLLA09'] == 'Yes':
 					counterGrad09 += 1
-			if classSizeSet == False and line['AlphaIndex(int)'] not in classmateIndexes:
+			if classSizeSet == False and line['AlphaIndex'] not in classmateIndexes:
 				if line['GraduatedLLA09'] == 'Yes':
 					classSizeGrad09 += 1
 				classSizeTotal += 1
-				classmateIndexes.append(line['AlphaIndex(int)'])
+				classmateIndexes.append(line['AlphaIndex'])
 		classSizeSet = True
 		# with open(os.path.join(pathInput, fileInput), 'r') as fIn:
 		# 	counterTotal = 0
@@ -51,21 +51,21 @@ def countListedNames(pathInput):
 		# 	classSizeSet = True
 			# print 'index: ' + str(index1) + '\tcounter: ' + str(counter) + '\t' + fileInput 
 			# print counterGrad09
-	participantCounts['TotalListed']['count'].append(counterTotal)
-	participantCounts['Grad09Listed']['count'].append(counterGrad09)
-	participantCounts['TotalListed']['classSize'] = classSizeTotal
-	participantCounts['Grad09Listed']['classSize'] = classSizeGrad09
-									  
+		participantCounts['TotalListed']['count'].append(counterTotal)
+		participantCounts['Grad09Listed']['count'].append(counterGrad09)
+		participantCounts['TotalListed']['classSize'] = classSizeTotal
+		participantCounts['Grad09Listed']['classSize'] = classSizeGrad09
+				  
 	return participantCounts
 
 def calculateStats(listOfCounts):
 	stats = {}
-	stats['ClassSize(int)'] = listOfCounts['classSize']
-	stats['SampleSize(int)'] = len(listOfCounts['count'])
-	stats['Min(int)'] = numpy.min(listOfCounts['count'])
-	stats['Max(int)'] = numpy.max(listOfCounts['count'])
-	stats['Mean(dec)'] = numpy.mean(listOfCounts['count'])
-	stats['STD(dec)'] = numpy.std(listOfCounts['count'])
+	stats['ClassSize'] = listOfCounts['classSize']
+	stats['SampleSize'] = len(listOfCounts['count'])
+	stats['Min'] = numpy.min(listOfCounts['count'])
+	stats['Max'] = numpy.max(listOfCounts['count'])
+	stats['Mean'] = numpy.mean(listOfCounts['count'])
+	stats['STD'] = numpy.std(listOfCounts['count'])
 
 	print listOfCounts
 	

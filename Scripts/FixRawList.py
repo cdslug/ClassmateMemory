@@ -6,7 +6,7 @@ import shutil
 import UtilFunc
 
 
-def fixRawList(inputFilePath, inputCompleteFilePath, outputFilePath, errorFilePath = None, yearbookReferenceFilePath = None, ):
+def fixRawList(inputFilePath, inputCompleteFilePath, errorFilePath, yearbookReferenceFilePath, outputFilePath):
 
 	fileLines = []
 	with open(inputFilePath,'r') as fIn:

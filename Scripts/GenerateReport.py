@@ -21,6 +21,7 @@
 
 import os
 import sys
+import shutil
 
 import UtilFunc
 # from reportlab.platypus import BaseDocTemplate, Frame, Paragraph, NextPageTemplate, PageBreak, PageTemplate
@@ -194,7 +195,7 @@ def writeEndingCredit():
 
 	return Elements
 
-def constructTrippleColumns(leftList, middlelList, rightList, listTitles):
+def constructTrippleColumns(leftList, middleList, rightList, listTitles):
 	namesPerPage = 57
 	styles=getSampleStyleSheet()
 	Elements=[]
@@ -210,7 +211,7 @@ def constructTrippleColumns(leftList, middlelList, rightList, listTitles):
 	middleColIndex = 0
 	rightColIndex = 0
 
-	iterationLength = (int(max([len(leftList),len(middlelList)])/namesPerPage) + 1)*namesPerPage*3
+	iterationLength = (int(max([len(leftList),len(middleList)])/namesPerPage) + 1)*namesPerPage*3
 
 	for i in range(0,iterationLength):
 
@@ -235,7 +236,7 @@ def constructTrippleColumns(leftList, middlelList, rightList, listTitles):
 				stringListMaster.append('<b>{}</b><br/>\n'.format(listTitles[1]))
 				middleColIndex += 1
 			elif middleColIndex < namesPerPage:
-				if list2Index < len(middlelList):
+				if list2Index < len(middleList):
 					stringListMaster.append('{}<br/>\n'.format(middleList[list2Index]))
 					list2Index += 1
 					middleColIndex += 1
@@ -305,8 +306,8 @@ def generateReport(inputFilePath, inputCompleteFilePath, errorFilePath, yearbook
 	# for line in indexedNames:
 	# 	(l0,l1,l2,l3,l4,l5,l6,l7) = line.replace('\r','').replace('\n','').split(',')
 	# #AlphaIndex,WrittenIndex,WrittenLast,WrittenFirst,YearbookLast,YearbookFirst,Spelling,GraduatedLLA09
-	# 	indexedNamesDict.append({'AlphaIndex(int)':l0,
-	# 							'WrittenIndex(int)':l1,
+	# 	indexedNamesDict.append({'AlphaIndex':l0,
+	# 							'WrittenIndex':l1,
 	# 							'WrittenLast':l2,
 	# 							'WrittenFirst':l3,
 	# 							'YearbookLast':l4,
@@ -320,23 +321,22 @@ def generateReport(inputFilePath, inputCompleteFilePath, errorFilePath, yearbook
 
 	for entry in indexedNamesDict:
 		if entry['GraduatedLLA09'].lower() == 'yes':
-			if entry['WrittenIndex(int)'][0] == '-':
+			if entry['WrittenIndex'] == '-':
 				forgottenGrad.append(entry)
 			else:
 				rememberedGrad.append(entry)
 		elif entry['GraduatedLLA09'].lower() == 'no':
-			if entry['WrittenIndex(int)'][0] == '-':
+			if entry['WrittenIndex'] == '-':
 				forgottenNonGrad.append(entry)
 			else:
 				rememberedNonGrad.append(entry)
 
-	rgCount = len(set([n['AlphaIndex(int)'] for n in rememberedGrad]))
+	rgCount = len(set([n['AlphaIndex'] for n in rememberedGrad]))
 	fgCount = len(forgottenGrad)
-	rngCount = len(set([n['AlphaIndex(int)'] for n in rememberedNonGrad]))
+	rngCount = len(set([n['AlphaIndex'] for n in rememberedNonGrad]))
 	fngCount = len(forgottenNonGrad)
-	Elements += constructSingleColumnParagraphs(['<br/><b>{}</b> students graduated in \'09 and <br/>' +
-												 '<b>{}</b> additional students attended in either \'06, \'07, or \'08.'.format(rgCount + fgCount,
-												 																				rngCount + fngCount)])
+	Elements += constructSingleColumnParagraphs(['<br/><b>{}</b> students graduated in \'09 and <br/>'.format(rgCount + fgCount) +
+												 '<b>{}</b> additional students attended in either \'06, \'07, or \'08.'.format(rngCount + fngCount)])
 	
 
 	drawing = MyDrawing()
@@ -353,7 +353,7 @@ def generateReport(inputFilePath, inputCompleteFilePath, errorFilePath, yearbook
 	rememberedGradString = [(n['WrittenFirst'] + ' ' + n['WrittenLast'])
 						   for n in rememberedGrad]
 	rememberedGradStringSp = [(n['YearbookFirst'] + ' ' + n['YearbookLast'])
-						     if n['Spelling(dec)'][0] != 1
+						     if n['Spelling'] != 1
 						     else ''
 						     for n in rememberedGrad]
 	forgottenGradString = [n['YearbookFirst'] + ' ' + n['YearbookLast'] for n in forgottenGrad]
@@ -361,7 +361,7 @@ def generateReport(inputFilePath, inputCompleteFilePath, errorFilePath, yearbook
 	rememberedNonGradString = [(n['WrittenFirst'] + ' ' + n['WrittenLast'])
 							  for n in rememberedNonGrad]
 	rememberedNonGradStringSp = [(n['YearbookFirst'] + ' ' + n['YearbookLast'])
-						        if n['Spelling(dec)'][0] != 1
+						        if n['Spelling'] != 1
 						        else ''
 						        for n in rememberedNonGrad]						  
 	forgottenNonGradString = [n['YearbookFirst'] + ' ' + n['YearbookLast'] for n in forgottenNonGrad]
@@ -383,6 +383,8 @@ def generateReport(inputFilePath, inputCompleteFilePath, errorFilePath, yearbook
 	#start the construction of the pdf
 	doc.build(Elements)
 
+	shutil.copy(inputFilePath,inputCompleteFilePath)
+	os.remove(inputFilePath)
 
 ########################
 #####     MAIN     #####

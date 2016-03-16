@@ -73,18 +73,18 @@ def buildGroups(fileInput):
 	classSize = int(math.ceil(math.sqrt(len(pairList)))) #fancy because of ignorning when index = index
 	pairMatrix = [[0 for i in range(classSize)] for j in range(classSize)]
 	for pair in pairList:
-		index1 = pair['AlphaIndex_1(int)']
-		index2 = pair['AlphaIndex_2(int)']
-		pairMatrix[index1][index2] = pair['PairScorej(dec)']
-		pairMatrix[index2][index1] = pair['PairScore(dec)']
+		index1 = pair['AlphaIndex_1']
+		index2 = pair['AlphaIndex_2']
+		pairMatrix[index1][index2] = pair['PairScore']
+		pairMatrix[index2][index1] = pair['PairScore']
 
-	sortedPairList = sorted(pairList, key=lambda pairs: pairs['PairScore(dec)'])[::-1]
+	sortedPairList = sorted(pairList, key=lambda pairs: pairs['PairScore'])[::-1]
 
 	groupNumber = 0
 	groupScoreOld = 0;
 	groupScoreNew = 0;
 	groupData = []
-	scoreHistory = [{'Score':0,'AlphaIndex(int)':-1}] #contains dict of score and one member alphIndex
+	scoreHistory = [{'Score':0,'AlphaIndex':-1}] #contains dict of score and one member alphIndex
 #0A) Divide classmates into groups of 2
 #1) Iterate over people until there are very few members changing
 #	It might help to randomly choose members for each iteration, or go back and forth
@@ -111,8 +111,9 @@ def buildGroups(fileInput):
 	#print 'groups2Members' + str(groups2Members)
 	numberGroupChanges = classSize
 	n = 0
+	print 'ClassSize: {}'.format(classSize)
 	# while numberGroupChanges > classSize * 0.01:
-	for r in range(len(order)//3): #range was found to by observation of data
+	for r in range(len(order)//3): #range was found by observation of data
 		numberGroupChanges = 0
 		random.shuffle(order)
 		groups2MembersTemp = groups2Members
@@ -145,10 +146,10 @@ def buildGroups(fileInput):
 
 	for memberNumber,groupNumber in enumerate(members2Groups):
 		groupScore = groups2Members[groupNumber]
-		groupData.append({	'GroupNumber(int)':groupNumber,
-							'GroupScore(dec)':getGroupScore(groupScore,pairMatrix),
-							'AlphaIndex(int)':memberNumber})
-	return sorted(groupData, key=lambda gd: gd['GroupNumber(int)'])
+		groupData.append({	'GroupNumber':groupNumber,
+							'GroupScore':getGroupScore(groupScore,pairMatrix),
+							'AlphaIndex':memberNumber})
+	return sorted(groupData, key=lambda gd: gd['GroupNumber'])
 
 
 def attachNames(groupData,yearbookNamesFile):
@@ -157,14 +158,14 @@ def attachNames(groupData,yearbookNamesFile):
 
 	groupDataWithNames = []
 	for groupMember in groupData:
-		gn = int(groupMember['GroupNumber(int)'])
-		gs = float(groupMember['GroupScore(dec)'])
-		ai = int(groupMember['AlphaIndex(int)'])
+		gn = int(groupMember['GroupNumber'])
+		gs = float(groupMember['GroupScore'])
+		ai = int(groupMember['AlphaIndex'])
 		ln = yearbookNames[ai]['YearbookLast']
 		fn = yearbookNames[ai]['YearbookFirst']
-		entry = {	'GroupNumber(int)':gn,
-					'GroupScore(dec)':gs,
-					'AlphaIndex(int)':ai,
+		entry = {	'GroupNumber':gn,
+					'GroupScore':gs,
+					'AlphaIndex':ai,
 					'YearbookLast':ln,
 					'YearbookFirst':fn}
 		groupDataWithNames.append(entry)
@@ -173,9 +174,9 @@ def attachNames(groupData,yearbookNamesFile):
 
 def writeToFile(data, fileOutput):
 	with open(fileOutput,'w') as fOut:
-		fOut.write('GroupNumber(int),GroupScore(dec),AlphaIndex(int),YearbookLast,YearbookFirst\n')
+		fOut.write('GroupNumber,GroupScore,AlphaIndex,YearbookLast,YearbookFirst\n')
 		for entry in data:
-			fOut.write('{},{},{},{},{}'.format(	entry['GroupNumber'],
+			fOut.write('{},{},{},{},{}\n'.format(	entry['GroupNumber'],
 				   								entry['GroupScore'],
 				   								entry['AlphaIndex'],
 				   								entry['YearbookLast'],
@@ -187,7 +188,7 @@ def writeToFile(data, fileOutput):
 usageDescription = ['fileInput: A full path to a .csv file containing nXn pair scores',
 					'yearbookNamesFile: A full path to a .csv file containing all expected classmates names along with their alphabetical index, among other details. See full documentation for extensive details',
 					'fileOutput: A full path to a .csv file']
-checkInputArgs(3)
+UtilFunc.checkInputArgs(3)
 
 fileInput = sys.argv[1]
 yearbookNamesFile = sys.argv[2]

@@ -21,17 +21,18 @@ def fileLength(fname):
 	return i + 1 if not (i == 0 and line == []) else i
 
 def parseNameFromFile(fileName):
-	sections = fileName.replace('_','.').split('.')
+	sections = fileName.split('/')[-1].replace('_','.').split('.')
 	# print(sections)
 	### sometimes with a new person's raw file, there's not a number
+	# print sections
 	if(sections[-2].isdigit()):
 		return sections[-3]
 	else:
 		return sections[-2]
 
 def parseNumberFromFile(fileName):
-	sections = fileName.replace('_','.').split('.')
-	# print(sections)
+	sections = fileName.split('/')[-1].replace('_','.').split('.')
+	# print 'parseNumber, sections: {}'.format(sections)
 	if(len(sections) == 5 and sections[-2].isdigit()):
 		return sections[-2]
 	else:
@@ -48,10 +49,10 @@ def appendNumberToFileName(fileName,number):
 def interpretString(string):
 	ret = string
 	try:
-		ret = float(string)
+		ret = int(string)
 	except ValueError:
 		try:
-			ret = int(string)
+			ret = float(string)
 		except ValueError:
 			pass
 	return ret
@@ -99,7 +100,7 @@ def prepareDirectory(newPath):
 			os.makedirs(newPath)
 		except OSError:
 			sys.exit('Error: could not create {}\nCheck permissions.'.format(newPath))
-	return
+	return newPath
 
 def getSortedJaroScoreList(name, refIndexNames):
 	scoredIndexedNames = []
@@ -205,4 +206,5 @@ def matchName(name, refIndexNames, debugInput = None):
 	else:
 		matchedEntry.update(sortedScoreList[0])
 		
+	# print 'Match Name, Name: {0}, matchedEntry:{1}'.format(name,matchedEntry)
 	return matchedEntry
