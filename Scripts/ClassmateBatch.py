@@ -21,7 +21,7 @@ import GenerateReport
 def getNumberFromNameInFile(name, yearbookReferenceFilePath):
 	nameSep = re.findall('[A-Z][^A-Z]*',name)
 	# print '### name:{0} nameSep: {1}'.format(name, nameSep)
-	nameDict = {'WrittenLast':nameSep[0],'WrittenFirst':nameSep[1]}
+	nameDict = {'WrittenLast':''.join(nameSep[0:-1]),'WrittenFirst':nameSep[-1]}
 	yearbookNames = UtilFunc.parseDataFromFile(yearbookReferenceFilePath)
 	jaroMatchIndex = UtilFunc.matchName(nameDict, yearbookNames)['AlphaIndex']
 
